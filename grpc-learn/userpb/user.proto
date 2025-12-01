@@ -1,0 +1,40 @@
+// userpb/user.proto
+
+syntax = "proto3";
+
+// 这是 Go 的包名。
+// 它告诉 protoc 把生成的 Go 代码放在哪个包里。
+option go_package = "example.com/grpc-hello/userpb"; 
+
+// 我们定义一个包，用于在 proto 文件中避免命名冲突
+package userpb;
+
+// 我们的服务 "UserService"
+service UserService {
+  // Unary RPC: "GetUser"
+  rpc GetUser(GetUserRequest) returns (UserResponse);
+  // 注意 "stream" 关键字在 "响应" 方
+  rpc GenerateUserReport(UserReportRequest) returns (stream UserReportLine);
+}
+
+// "GetUser" 的请求消息
+message GetUserRequest {
+  string user_id = 1;
+}
+
+// "GetUser" 的响应消息
+message UserResponse {
+  string user_id = 1;
+  string name = 2;
+  bool is_active = 3;
+}
+
+// "生成报告" 的请求
+message UserReportRequest {
+  // 比如我们可以加一些过滤条件，这里先留空
+}
+
+// "生成报告" 的响应（注意这是 "一行"）
+message UserReportLine {
+  string line_content = 1;
+}
