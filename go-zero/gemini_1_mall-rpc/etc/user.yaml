@@ -1,0 +1,15 @@
+Name: user.rpc
+ListenOn: 0.0.0.0:8080 # RPC 监听端口
+
+# 必须配置 Etcd，这样 API 才能找到我
+Etcd:
+  Hosts:
+  - 127.0.0.1:2379
+  Key: user.rpc # 服务注册的 Key，API 也要用这个 Key 来找
+
+Mysql:
+  DataSource: root:root@tcp(127.0.0.1:3306)/gozero?charset=utf8mb4&parseTime=true&loc=Asia%2FShanghai
+
+Cache:
+  - Host: 127.0.0.1:6379
+    Pass: "" # 如果有密码填这里

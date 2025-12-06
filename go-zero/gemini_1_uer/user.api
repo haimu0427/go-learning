@@ -1,0 +1,45 @@
+syntax = "v1"
+
+type (
+	LoginReq {
+		Username string `json:"username"`
+		Password string `json:"password"`
+	}
+	LoginResp {
+		Id       int64  `json:"id"`
+		Name     string `json:"name"`
+		Token    string `json:"token"`
+		ExpireAt string `json:"expireAt"`
+	}
+	// 新增：用户信息响应
+	UserInfoResp {
+		Id     int64  `json:"id"`
+		Name   string `json:"name"`
+		Mobile string `json:"mobile"`
+	}
+)
+
+// 1. 公开接口 (不需要登录)
+@server (
+	handler: UserHandler
+	group:   user
+	prefix:  /v1
+)
+service user-api {
+	@handler Login
+	post /user/login (LoginReq) returns (LoginResp)
+}
+
+// 2. ⚠️ 私有接口 (需要 JWT 认证)
+@server (
+	handler:    UserHandler
+	middleware: LogMiddleware // <--- 新增这行，名字要对应中间件定义的名字
+	group:      user
+	prefix:     /v1
+	jwt:        Auth // <--- 关键：开启 JWT 认证，'Auth' 是配置里的 key
+)
+service user-api {
+	@handler UserInfo
+	get /user/info returns (UserInfoResp)
+}
+

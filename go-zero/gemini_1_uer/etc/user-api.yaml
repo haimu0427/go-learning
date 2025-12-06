@@ -1,0 +1,23 @@
+Name: user-api
+Host: 0.0.0.0
+Port: 8888
+
+# # 新增 MySQL 配置
+# Mysql:
+#   DataSource: root:root@tcp(127.0.0.1:3306)/gozero?charset=utf8mb4&parseTime=true&loc=Asia%2FShanghai
+# # 新增 Redis 缓存配置 (go-zero 支持 Redis Cluster，这里演示单机)
+# Cache:
+#   - Host: 127.0.0.1:6379
+#     Pass: "" # 如果有密码填这里
+
+# 新增 JWT 配置
+Auth:
+  AccessSecret: "u48124u129j124124u129" # 密钥，随便填，但要复杂
+  AccessExpire: 86400 # 过期时间 (秒)
+
+# 配置 RPC 客户端
+UserRpc:
+  Etcd:
+    Hosts:
+      - 127.0.0.1:2379
+    Key: user.rpc # 必须和 RPC 服务端的 Key 一致！

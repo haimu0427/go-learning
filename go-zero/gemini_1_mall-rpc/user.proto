@@ -1,0 +1,24 @@
+syntax = "proto3";
+
+package user;
+
+// go_package 必须填，指定生成的 Go 代码包路径
+option go_package = "./user";
+
+// 定义请求（直接复用之前的参数概念，但需要写成 proto 格式）
+message LoginReq {
+  string username = 1;
+  string password = 2;
+}
+
+message LoginResp {
+  int64 id = 1;
+  string name = 2;
+  string token = 3;
+  string expireAt = 4;
+}
+
+// 定义服务
+service User {
+  rpc Login(LoginReq) returns(LoginResp);
+}
