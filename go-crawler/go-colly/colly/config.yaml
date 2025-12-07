@@ -1,0 +1,24 @@
+# 爬虫配置文件
+# 对应 Go 代码中的 SpiderConfig 结构体
+
+# User-Agent 字符串，用于标识爬虫身份
+# 如果不设置，colly 扩展会自动随机切换 User-Agent
+UserAgent: "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36"
+
+# 允许爬取的域名列表
+# 只有这些域名下的页面才会被爬取
+AllowedDomains:
+  # 可以添加更多域名，例如：
+  - "books.toscrape.com"
+  - "example.com"
+  - "another-site.org"
+
+
+# 并发数控制
+# 同时运行的 Goroutine 数量，避免过多请求导致服务器压力过大或IP被封
+Parallelism: 5
+
+# 请求延迟设置
+# 每次请求之间的间隔时间，模拟人类浏览行为，避免被反爬虫机制检测
+# 格式：数字 + 单位 (s=秒, ms=毫秒, m=分钟, h=小时)
+Delay: "1s"
