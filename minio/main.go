@@ -4,9 +4,11 @@ import (
 	"bufio"
 	"context"
 	"fmt"
+	"io"
 	"log"
 	"net/url"
 	"os"
+	"path/filepath"
 	"strings"
 	"time"
 
@@ -19,8 +21,8 @@ func main() {
 
 	// 1. 配置连接信息
 	endpoint := "127.0.0.1:9000"     // OrbStack 映射的 API 端口
-	accessKeyID := "admin"           // 你启动 Docker 时设置的账号
-	secretAccessKey := "password123" // 你设置的密码
+	accessKeyID := "admin"           // 启动 Docker 时设置的账号
+	secretAccessKey := "password123" // 设置的密码
 	useSSL := false                  // 本地开发通常不带 SSL
 
 	// 2. 初始化 MinIO Client
@@ -83,6 +85,9 @@ func main() {
 
 	// 4. 生成预签名 URL
 	generatePresignedURL(minioClient, ctx, bucketName, objectName)
+
+	// 5. 下载对象到本地
+	downloadObject(minioClient, ctx, bucketName, objectName, "./downloaded.jpg")
 }
 
 // generatePresignedURL 生成预签名访问链接
@@ -105,4 +110,38 @@ func generatePresignedURL(client *minio.Client, ctx context.Context, bucketName,
 	fmt.Println("\n===========================================")
 	fmt.Printf("🔗 预签名访问链接（24小时内有效）:\n\n%s\n", presignedURL)
 	fmt.Println("===========================================")
+}
+
+// downloadObject 从 MinIO 下载对象到本地文件
+func downloadObject(client *minio.Client, ctx context.Context, bucketName, objectName, localPath string) {
+	// 获取对象流
+	object, err := client.GetObject(ctx, bucketName, objectName, minio.GetObjectOptions{})
+	if err != nil {
+		log.Printf("获取对象流失败: %v\n", err)
+		return
+	}
+	defer object.Close() // 记得关闭流
+
+	// 确保目录存在
+	if err := os.MkdirAll(filepath.Dir(localPath), 0755); err != nil {
+		log.Printf("创建目录失败: %v\n", err)
+		return
+	}
+
+	// 创建本地文件
+	localFile, err := os.Create(localPath)
+	if err != nil {
+		log.Printf("创建本地文件失败: %v\n", err)
+		return
+	}
+	defer localFile.Close()
+
+	// 复制数据
+	written, err := io.Copy(localFile, object)
+	if err != nil {
+		log.Printf("下载失败: %v\n", err)
+		return
+	}
+
+	fmt.Printf("✅ 下载成功: %s (%d bytes)\n", localPath, written)
 }

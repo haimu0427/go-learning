@@ -1,1 +1,3 @@
 sarama/
+.omc/
+.DS_Store
